@@ -10,9 +10,19 @@ lerna-debug.log*
 node_modules
 dist
 *.local
+.env
+.env.*
+
+# Cache / tooling
+.cache/
+.rsbuild/
+.turbo/
+coverage/
+.idea/
 
 # Editor directories and files
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
