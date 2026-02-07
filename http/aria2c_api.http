@@ -1,0 +1,32 @@
+POST http://127.0.0.1:16801/jsonrpc
+
+{
+  "method": "system.multicall",
+  "json-rpc": "2.0",
+  "id": 0,
+  "params": [
+    [
+      {
+        "methodName": "aria2.tellActive",
+        "params": []
+      },
+      {
+        "methodName": "aria2.tellWaiting",
+        "params": [
+          0,
+          20
+        ]
+      }
+    ]
+  ]
+}
+
+###
+POST http://127.0.0.1:16801/jsonrpc
+
+{
+  "method": "aria2.getGlobalOption",
+  "json-rpc": "2.0",
+  "id": 1,
+  "params": []
+}
