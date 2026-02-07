@@ -1,6 +1,6 @@
 use anyhow::Result;
 use tauri::{
-    menu::{Menu, MenuEvent, MenuItem},
+    menu::{Menu, MenuEvent, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent},
     AppHandle, Emitter, Listener, Wry,
 };
@@ -36,6 +36,14 @@ pub fn update_tray_menu() -> Result<()> {
 }
 
 fn create_tray_menu(app_handle: &AppHandle) -> Result<Menu<Wry>> {
+    let show_window = MenuItem::with_id(
+        app_handle,
+        "show_window",
+        t("common.ShowWindow"),
+        true,
+        None::<&str>,
+    )?;
+
     let quit_i = MenuItem::with_id(app_handle, "quit", t("common.Exit"), true, None::<&str>)?;
 
     let add_task = MenuItem::with_id(
@@ -46,8 +54,10 @@ fn create_tray_menu(app_handle: &AppHandle) -> Result<Menu<Wry>> {
         None::<&str>,
     )?;
 
+    let separator = PredefinedMenuItem::separator(app_handle)?;
+
     let menu = tauri::menu::MenuBuilder::new(app_handle)
-        .items(&[&quit_i, &add_task])
+        .items(&[&show_window, &add_task, &separator, &quit_i])
         .build()
         .unwrap();
     Ok(menu)
@@ -58,6 +68,9 @@ fn on_menu_event(_: &AppHandle, event: MenuEvent) {
         "quit" => {
             println!("quit menu item was clicked");
             feat::quit(Some(0));
+        }
+        "show_window" => {
+            create_window(true);
         }
         "add_task" => {
             println!("add task menu item was clicked");

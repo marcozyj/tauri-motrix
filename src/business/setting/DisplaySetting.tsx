@@ -26,7 +26,7 @@ function AppearanceSetting() {
     if (
       autoLaunchEnabled !== undefined &&
       motrix &&
-      motrix?.app_hide_window !== autoLaunchEnabled
+      motrix?.enable_auto_launch !== autoLaunchEnabled
     ) {
       mutateMotrix({ ...motrix, enable_auto_launch: autoLaunchEnabled }, false);
     }

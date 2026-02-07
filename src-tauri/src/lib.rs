@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri_plugin_autostart::MacosLauncher;
 use tokio::time::timeout;
 use utils::resolve;
@@ -19,12 +20,32 @@ mod utils;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default()
+        .menu(|app| {
+            let show_window =
+                MenuItem::with_id(app, "show_window", "显示窗口", true, None::<&str>)?;
+            let separator = PredefinedMenuItem::separator(app)?;
+            let quit = PredefinedMenuItem::quit(app, None)?;
+
+            let app_menu = Submenu::with_items(
+                app,
+                "Tauri Motrix",
+                true,
+                &[&show_window, &separator, &quit],
+            )?;
+
+            Ok(Menu::with_items(app, &[&app_menu])?)
+        })
+        .on_menu_event(|_app, event| {
+            if event.id().as_ref() == "show_window" {
+                create_window(true);
+            }
+        })
         .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {
             create_window(true);
         }))
         .plugin(tauri_plugin_sql::Builder::default().build())
         .plugin(tauri_plugin_autostart::init(
-            MacosLauncher::LaunchAgent,
+            MacosLauncher::AppleScript,
             None,
         ))
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -101,6 +122,11 @@ pub fn run() {
                     _ => {}
                 }
             }
+        }
+
+        #[cfg(target_os = "macos")]
+        tauri::RunEvent::Reopen { .. } => {
+            create_window(true);
         }
 
         _ => {}
